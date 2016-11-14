@@ -1,0 +1,85 @@
+From e4bd0ed2c6124262c44cf183b7334d4070b7063f Mon Sep 17 00:00:00 2001
+From: Doxramos <green.morgan87@gmail.com>
+Date: Sat, 12 Nov 2016 16:14:32 -0800
+Subject: [PATCH] Added XP Weekend Script
+
+---
+ src/server/scripts/Custom/XpWeekend.cpp            | 47 ++++++++++++++++++++++
+ src/server/scripts/Custom/custom_script_loader.cpp |  4 +-
+ 2 files changed, 49 insertions(+), 2 deletions(-)
+ create mode 100644 src/server/scripts/Custom/XpWeekend.cpp
+
+diff --git a/src/server/scripts/Custom/XpWeekend.cpp b/src/server/scripts/Custom/XpWeekend.cpp
+new file mode 100644
+index 0000000..b82c53a
+--- /dev/null
++++ b/src/server/scripts/Custom/XpWeekend.cpp
+@@ -0,0 +1,47 @@
++//
++// Created by Chubs on 11/11/2016.
++//
++
++#include "ScriptMgr.h"
++#include "Player.h"
++#include "Chat.h"
++#include "World.h"
++#include "/usr/include/boost/date_time.hpp"
++
++
++class XpWeekend : public PlayerScript
++{
++public:
++    XpWeekend() : PlayerScript("XpWeekend") { }
++    void OnGiveXP(Player* player, uint32& amount, Unit* victim)override
++    {
++        boost::gregorian::date date(boost::gregorian::day_clock::local_day());
++        auto day = date.day_of_week();
++        if (day == boost::date_time::Friday ||
++            day == boost::date_time::Saturday ||
++            day == boost::date_time::Sunday) {
++
++            amount = amount*2; }
++    }
++    void OnLogin(Player* player, bool firstLogin)
++    {
++        boost::gregorian::date date(boost::gregorian::day_clock::local_day());
++        auto day = date.day_of_week();
++        if (day == boost::date_time::Friday ||
++            day == boost::date_time::Saturday ||
++            day == boost::date_time::Sunday) {
++
++            ChatHandler(player->GetSession()).PSendSysMessage("Double XP is going on now!");
++        }
++        else {
++            //Make informational Script?
++        }
++
++    }
++
++};
++
++void AddSC_XpWeekend()
++{
++    new XpWeekend();
++}
+\ No newline at end of file
+diff --git a/src/server/scripts/Custom/custom_script_loader.cpp b/src/server/scripts/Custom/custom_script_loader.cpp
+index dd4b5e9..d3de882 100644
+--- a/src/server/scripts/Custom/custom_script_loader.cpp
++++ b/src/server/scripts/Custom/custom_script_loader.cpp
+@@ -16,10 +16,10 @@
+  */
+ 
+ // This is where scripts' loading functions should be declared:
+-
+-
++void AddSC_XpWeekend();
+ // The name of this function should match:
+ // void Add${NameOfDirectory}Scripts()
+ void AddCustomScripts()
+ {
++    AddSC_XpWeekend();
+ }
+-- 
+2.8.3
+
